@@ -1,1 +1,177 @@
-<!doctype html><html lang="en">  <head>    <meta charset="utf-8">    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">    <meta name="description" content="{{ page.description | default: site.description | smartify }}">    <meta name="author" content="{{ site.authors }}">    <meta name="generator" content="Jekyll v{{ jekyll.version }}">    <title>Tetrix</title>  </head>  <style>#canvas { border: 1px solid black ; display: inline-block }</style><body><pre id="canvas"></pre><script>const SCREEN_W = 20    , SCREEN_H = 30 ;let buffer ;const line = { w: 5, h: 1, data: [ [ '=', '=', '=', '=', '=' ] ] };const T = { w: 3, h: 3, data: [  [ 'T', 'T', 'T' ], [ ' ', 'T', ' ' ], [ ' ', 'T', ' ' ] ] };const square = { w:2 , h:2 , data:[ [ 'D', 'D' ], [ 'D', 'D' ]] };function clear ( ){  let row = new Array( SCREEN_W ) ;  for ( let x = 0 ; x < SCREEN_W ; x ++ )        row[ x ] = ' ' ;  buffer = new Array( SCREEN_H ) ;  for ( let y = 0 ; y < SCREEN_H ; y ++ )        buffer[ y ] = row.slice( 0 ) ; //tambien a cero                                                    }function draw ( x, y, ch ){  if ( x >= 0 && x < SCREEN_W && y >= 0 && y < SCREEN_H )       buffer[ y ][ x ] = ch ;}function flush ( ){  const canvas = document.getElementById( 'canvas' ) ;  //David no eniendo bien esta linea   canvas.innerText = buffer.map( row => row.join( '' ) ).join( "\n" ) ;}function draw_walls(){  for ( let i = 0 ; i < SCREEN_H ; i ++ )        draw( 0, i, '*' ), draw( SCREEN_W - 1, i, '*' );  for ( let i = 0 ; i < SCREEN_W ; i ++ )        draw( i, SCREEN_H - 1 , '*' ) ;}function rotate_figure (figure, rotate){// 0 / 1 +90º / 2 +180º / 3 + 270ºswitch(rotate) {  case 1:    break;  case 2:         break;  case 3:         break;  case 0:  default:    figure = figure}  return figure;}function draw_tetrix ( x, y, figure, rotate ){  // rotate param  switch(rotate) {    case 1:    for ( let i = 0 ; i < figure.h ; i ++ ){          for ( let j = 0 ; j < figure.w ; j ++ ){           draw( i + x ,j +y , figure.data[i][j]);                  }    }     break;  case 2:    for ( let i = 0 ; i < figure.h ; i ++ ){          for ( let j = 0 ; j < figure.w ; j ++ ){           draw( -j + x , -i +y , figure.data[i][j]);                  }    }     break;  case 3:    for ( let i = 0 ; i < figure.h ; i ++ ){          for ( let j = 0 ; j < figure.w ; j ++ ){           draw( -i + x ,j +y , figure.data[i][j]);                  }    }     break;  case 0:  default:    for ( let i = 0 ; i < figure.h ; i ++ ){          for ( let j = 0 ; j < figure.w ; j ++ ){           draw( j + x ,i +y , figure.data[i][j]);                  }    }  }}    function main ( ){  clear( ) ;  draw_walls()  draw_tetrix ( 3, 2, T,0);  draw_tetrix ( 10, 8, T,1);  draw_tetrix ( 15, 15, T,2);  draw_tetrix ( 18, 20, T,3);  console.log( )  // EDITAR DESDE AQUI  //                          // TAREA 1: pintar las paredes del tetris. Tiene que verse algo asi:  //  // *  *   // *  * {W: 0,h:1, data[['=','=','=']]},{W: 1,h:2, data[[' ','=',' ']]},{W: 1,h:3, data[[' ','=',' ']]}  // ****  flush( ) ;}main( ) ;</script>  </body></html><html></body>    </html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="generator" content="">
+    <title>Tetrix</title>
+  </head>
+  
+<style>
+#canvas { border: 1px solid #efefef ; display: inline-block }
+</style>
+
+<body onKeyDown="playKeyboard()">
+<pre id="canvas"></pre>
+
+<script>
+const SCREEN_W = 20
+    , SCREEN_H = 30 ;
+
+let buffer ;
+
+const line = { w: 5, h: 1, data: [ [ '=', '=', '=', '=', '=' ] ] };
+const T = { w: 3, h: 3, data: [  [ 'T', 'T', 'T' ], [ ' ', 'T', ' ' ], [ ' ', 'T', ' ' ] ] };
+const square = { w:2 , h:2 , data:[ [ 'D', 'D' ], [ 'D', 'D' ]] };
+
+function clear ( )
+{
+  let row = new Array( SCREEN_W ) ;
+
+  for ( let x = 0 ; x < SCREEN_W ; x ++ )
+        row[ x ] = ' ' ;
+
+  buffer = new Array( SCREEN_H ) ;
+  for ( let y = 0 ; y < SCREEN_H ; y ++ )
+        buffer[ y ] = row.slice( 0 ) ; //tambien a cero                                                    
+}
+
+
+function draw ( x, y, ch )
+{
+  if ( x >= 0 && x < SCREEN_W && y >= 0 && y < SCREEN_H )
+       buffer[ y ][ x ] = ch ;
+}
+
+
+function flush ( )
+{
+  const canvas = document.getElementById( 'canvas' ) ;
+  //David no eniendo bien esta linea 
+  canvas.innerText = buffer.map( row => row.join( '' ) ).join( "\n" ) ;
+}
+function draw_walls()
+{
+
+  for ( let i = 0 ; i < SCREEN_H ; i ++ )
+        draw( 0, i, '*' ), draw( SCREEN_W - 1, i, '*' );
+  for ( let i = 0 ; i < SCREEN_W ; i ++ )
+        draw( i, SCREEN_H - 1 , '*' ) ;
+}
+
+
+function rotate_figure (figure, rotate)
+{
+
+/*
+const game_state = { x:5, y:8, figure: T, rotation: 0 } ; 
+function render ( ) 
+{ 
+  clean_buffers( ) ; 
+  draw_walls( ) ; 
+  draw_figure( game_state.x, game_state.y, game_state.figure, game_state.rotation ) ; 
+  }
+y en el main haces tienes algo como
+main ( ) { ....attachEvent( ..., ( ev ) => { game_state.rotation = ... ; render( ) } ) }*/
+}
+
+function draw_tetrix ( x, y, figure, rotate ){  // rotate param
+  switch(rotate) {
+  case 1:
+    for ( let i = 0 ; i < figure.h ; i ++ ){    
+      for ( let j = 0 ; j < figure.w ; j ++ ){   
+        draw( i + x ,j +y , figure.data[i][j]);            
+      }
+    } 
+    break;
+
+  case 2:
+    for ( let i = 0 ; i < figure.h ; i ++ ){    
+      for ( let j = 0 ; j < figure.w ; j ++ ){   
+        draw( -j + x , -i +y , figure.data[i][j]);            
+      }
+    } 
+    break;
+
+  case 3:
+    for ( let i = 0 ; i < figure.h ; i ++ ){    
+      for ( let j = 0 ; j < figure.w ; j ++ ){   
+        draw( -i + x ,j +y , figure.data[i][j]);            
+      }
+    } 
+    break;
+
+  case 0:
+  default:
+    for ( let i = 0 ; i < figure.h ; i ++ ){    
+      for ( let j = 0 ; j < figure.w ; j ++ ){   
+        draw( j + x ,i +y , figure.data[i][j]);            
+      }
+    }
+  }
+}
+
+
+const game_state = {x:3, y: 2, figure: T, rotate:2}
+function render()
+{
+  clear();
+  draw_walls();
+  draw_tetrix ( game_state.x, game_state.y, game_state.figure, game_state.rotate);
+  flush();
+}
+
+function playKeyboard (evt) {
+    evt = evt || window.event;
+    console.log (evt.keyCode )
+    if (evt.keyCode == 32) {
+        alert( "space");
+        game_state.y ==  game_state.y +1;
+    }else if(evt.keyCode == 39) {        
+        game_state.x = game_state.x + 1;
+    }else if(evt.keyCode == 37) {        
+      game_state.x = game_state.x - 1;
+    }else if(evt.keyCode == 38) {
+        alert(evt.code);
+        game_state.rotate = (game_state.rotate + 1) % 4;
+    };
+     return game_state;
+}
+function main ()
+{
+
+ 
+
+
+  /* zona raton */
+//  document.addEventListener("keydown", keyDownTextField, false);
+
+  render( );
+ 
+}
+
+main( ) ;
+
+            
+</script>
+
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+<html>
+
+</body>
+    
+</html>
